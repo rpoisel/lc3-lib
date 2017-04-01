@@ -1,0 +1,17 @@
+{extern_c}
+{Supported_Platforms := LinuxX86, Raspbian}
+
+FUNCTION i2c_smbus_write_byte_data : DINT
+	VAR_INPUT
+		fd : DINT;
+		command : USINT;
+		value : USINT;
+	END_VAR
+END_FUNCTION
+
+FUNCTION i2c_smbus_read_byte_data : DINT
+	VAR_INPUT
+		fd : DINT;
+		command : USINT;
+	END_VAR
+END_FUNCTION

@@ -1,0 +1,98 @@
+FUNCTION PCA9685_selectPWMMode
+	VAR_INPUT
+		fd : DINT;
+	END_VAR
+	
+	VAR
+		mode1_val : USINT;
+		
+		/* constants: registers */
+		mode1 : USINT := 16#00;
+		mode2 : USINT := 16#01;
+		
+		/* constants: bits */
+		allcall : USINT := 16#01;
+		outdrv : USINT := 16#04;
+		sleep : USINT := 16#10;
+	END_VAR
+	
+	i2c_smbus_write_byte_data(fd := fd, command := mode2, value := outdrv);
+	i2c_smbus_write_byte_data(fd := fd, command := mode1, value := allcall);
+	/* TODO sleep */
+	mode1_val := IAND(IN1 := TO_USINT(IN := i2c_smbus_read_byte_data(fd := fd, command := mode1)), IN2 := 16#FF);
+	mode1_val := IAND(IN1 := mode1_val, IN2 := TO_USINT(NOT(IN := TO_BYTE(sleep))));
+	i2c_smbus_write_byte_data(fd := fd, command := mode1, value := mode1_val);
+	/* TODO sleep */
+END_FUNCTION
+
+FUNCTION PCA9685_setPWMFrequency
+	VAR_INPUT
+		fd : DINT;
+		frequency : UDINT;
+	END_VAR
+	
+	VAR
+		prescaleval : LREAL := 25000000 /* MHz */;
+		oldmode : USINT;
+		newmode : USINT;
+		
+		/* constants */
+		mode1 : USINT := 16#00;
+		prescale : USINT := 16#FE; 
+	END_VAR
+	
+	prescaleval := prescaleval / 4096;
+	prescaleval := prescaleval / frequency;
+	prescaleval := prescaleval - 1;
+	
+	prescaleval := floor(prescaleval + 0.5);
+	
+	oldmode := TO_USINT(i2c_smbus_read_byte_data(fd := fd, command := mode1));
+	newmode := IOR(IN1 := IAND(IN1 := oldmode, IN2 := 16#7f), IN2 := 16#10);
+	
+	i2c_smbus_write_byte_data(fd := fd, command := mode1, value := newmode);
+	i2c_smbus_write_byte_data(fd := fd, command := prescale, value := TO_USINT(prescaleval));
+	i2c_smbus_write_byte_data(fd := fd, command := mode1, value := oldmode);
+	i2c_smbus_write_byte_data(fd := fd, command := mode1, value := IOR(IN1 := oldmode, IN2 := 16#80));
+END_FUNCTION
+
+FUNCTION PCA9685_setAllPWM
+	VAR_INPUT
+		fd : DINT;
+		on : UINT;
+		off : UINT;
+	END_VAR
+	
+	VAR	
+		ALL_LED_ON_L : USINT := 16#FA;
+		ALL_LED_ON_H : USINT := 16#FB;
+		ALL_LED_OFF_L : USINT := 16#FC;
+		ALL_LED_OFF_H : USINT := 16#FD;
+	END_VAR
+	
+	i2c_smbus_write_byte_data(fd := fd, command := ALL_LED_ON_L, value := TO_USINT(IAND(IN1 := on, IN2 := 16#FF)));
+	i2c_smbus_write_byte_data(fd := fd, command := ALL_LED_ON_H, value := TO_USINT(SAR(IN := on, N := 8)));
+	i2c_smbus_write_byte_data(fd := fd, command := ALL_LED_OFF_L, value := TO_USINT(IAND(IN1 := off, IN2 := 16#FF)));
+	i2c_smbus_write_byte_data(fd := fd, command := ALL_LED_OFF_H, value := TO_USINT(SAR(IN := off, N := 8)));
+END_FUNCTION
+
+FUNCTION setPWM
+	VAR_INPUT
+		fd : DINT;
+		channel : USINT;
+		on : UINT;
+		off : UINT;
+	END_VAR
+	
+	VAR
+		LED0_ON_L : USINT := 16#06;
+		LED0_ON_H : USINT := 16#07;
+		LED0_OFF_L : USINT := 16#08;
+		LED0_OFF_H : USINT := 16#09;
+	END_VAR
+
+	i2c_smbus_write_byte_data(fd := fd, command := LED0_ON_L + 4 * channel, value := TO_USINT(IAND(IN1 := on, IN2 := 16#FF)));
+	i2c_smbus_write_byte_data(fd := fd, command := LED0_ON_H + 4 * channel, value := TO_USINT(SAR(IN := on, N := 8)));
+	i2c_smbus_write_byte_data(fd := fd, command := LED0_OFF_L + 4 * channel, value := TO_USINT(IAND(IN1 := off, IN2 := 16#FF)));
+	i2c_smbus_write_byte_data(fd := fd, command := LED0_OFF_H + 4 * channel, value := TO_USINT(SAR(IN := off, N := 8)));
+END_FUNCTION

@@ -1,0 +1,33 @@
+TYPE
+	I2C_Constants : DINT (I2C_SLAVE := 1795); /* constant from the Linux kernel */
+END_TYPE
+
+FUNCTION I2C_MAX7311_write
+	VAR_INPUT
+		fd : DINT := -1;
+		address : INT;
+		pin_values : ARRAY[0..7] OF BOOL;
+	END_VAR
+
+	VAR
+		num_bytes : DINT := -1; /* number of bytes written to bus device */
+		cnt : INT := 0;
+		data : ARRAY[0 .. 63] OF BYTE;
+	END_VAR
+
+	IF fd >= 0 THEN
+		System_ioctl(fd := fd, request := I2C_Constants#I2C_SLAVE, data := address, ENO => ENO);
+		IF ENO THEN
+			data[0] := 16#06;
+			FOR cnt := 0 TO 7 BY 1 DO
+				data[1] := OR(data[1], SHL(pin_values[cnt], cnt));
+			END_FOR;
+			num_bytes := System_write(fd := fd, count := 2, data := data, ENO => ENO);
+			IF num_bytes <> 2 THEN
+				ENO := FALSE;
+			END_IF;
+		END_IF;
+	ELSE
+		ENO := FALSE;
+	END_IF;
+END_FUNCTION

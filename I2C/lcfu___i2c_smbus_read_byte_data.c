@@ -3,7 +3,7 @@
 
 #define DEBUG 1
 
-#include <i2c-dev.h>
+#include "i2c-dev.h"
 #if DEBUG==1
 #include <stdio.h>
 #endif

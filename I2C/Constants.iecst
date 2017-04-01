@@ -1,0 +1,3 @@
+TYPE
+	I2C_Constants : DINT (I2C_SLAVE := 1795); /* constant from the Linux kernel */
+END_TYPE

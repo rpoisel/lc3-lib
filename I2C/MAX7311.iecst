@@ -1,7 +1,3 @@
-TYPE
-	I2C_Constants : DINT (I2C_SLAVE := 1795); /* constant from the Linux kernel */
-END_TYPE
-
 FUNCTION I2C_MAX7311_write
 	VAR_INPUT
 		fd : DINT := -1;

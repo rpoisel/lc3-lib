@@ -1,0 +1,27 @@
+FUNCTION I2C_I2HAA_write
+	VAR_INPUT
+		fd : DINT := -1;
+		address : INT;
+		channel : USINT;
+		value : INT;
+	END_VAR
+	VAR
+		values : ARRAY [0..33] OF USINT;
+	END_VAR
+	
+	IF channel > 4 THEN
+		ENO := False;
+		RETURN;
+	END_IF;
+
+	IF fd >= 0 THEN
+		System_ioctl(fd := fd, request := I2C_Constants#I2C_SLAVE, data := address, ENO => ENO);
+		IF ENO THEN
+			values[0] := TO_USINT(value MOD 256);
+			values[1] := TO_USINT(value / 256);
+			ENO := i2c_smbus_write_block_data(fd := fd, command := channel, len := 2, values := values) = 2 /* bytes sent */;
+		END_IF;
+	ELSE
+		ENO := FALSE;
+	END_IF;
+END_FUNCTION

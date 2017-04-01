@@ -15,3 +15,22 @@ FUNCTION i2c_smbus_read_byte_data : DINT
 		command : USINT;
 	END_VAR
 END_FUNCTION
+
+FUNCTION i2c_smbus_read_block_data : DINT
+	VAR_INPUT
+		fd : DINT;
+		command : USINT;
+	END_VAR
+	VAR_OUTPUT
+		values : ARRAY [0..33] OF USINT;
+	END_VAR
+END_FUNCTION
+
+FUNCTION i2c_smbus_write_block_data : DINT
+	VAR_INPUT
+		fd : DINT;
+		command : USINT;
+		len : USINT;
+		values : ARRAY [0..33] OF USINT;
+	END_VAR
+END_FUNCTION

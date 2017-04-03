@@ -2,27 +2,29 @@ FUNCTION I2C_I2HAE_read
 	VAR_INPUT
 		fd : DINT := -1;
 		address : INT;
-		channel : USINT;
 	END_VAR
 	VAR_OUTPUT
-		value : INT;
+		values : ARRAY[0..4] OF UINT;
 	END_VAR
 	VAR
-		values : ARRAY [0..33] OF USINT;
+		bus_data : ARRAY[0..63] OF BYTE;
+		num_bytes_read : DINT;
+		cnt : USINT;
 	END_VAR
-
-	IF channel > 4 THEN
-		ENO := False;
-		RETURN;
-	END_IF;
+	VAR CONSTANT
+		num_channels : USINT := 5;
+		num_bytes : USINT := 11;
+	END_VAR
 
 	IF fd >= 0 THEN
 		System_ioctl(fd := fd, request := I2C_Constants#I2C_SLAVE, data := address, ENO => ENO);
 		IF ENO THEN
-			ENO := i2c_smbus_read_block_data(fd := fd, command := channel, values => values) = 2 /* bytes received */;
+			num_bytes_read := System_read(fd := fd, count := num_bytes, data := bus_data);
 		END_IF;
-		IF ENO THEN
-			value := values[1] * 256 + values[0];
+		IF ENO AND num_bytes_read = num_bytes THEN
+			FOR cnt := 0 TO num_channels - 1 BY 1 DO
+				values[cnt] := TO_UINT(bus_data[1 + cnt * 2]) + TO_UINT(bus_data[2 + cnt * 2]) * 256;
+			END_FOR;
 		END_IF;
 	ELSE
 		ENO := FALSE;

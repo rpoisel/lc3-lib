@@ -59,8 +59,8 @@ END_FUNCTION
 FUNCTION PCA9685_setAllPWM
 	VAR_INPUT
 		fd : DINT;
-		on : UINT;
-		off : UINT;
+		on_value : UINT;
+		off_value : UINT;
 	END_VAR
 	
 	VAR	
@@ -70,18 +70,18 @@ FUNCTION PCA9685_setAllPWM
 		ALL_LED_OFF_H : USINT := 16#FD;
 	END_VAR
 	
-	i2c_smbus_write_byte_data(fd := fd, command := ALL_LED_ON_L, value := TO_USINT(IAND(IN1 := on, IN2 := 16#FF)));
-	i2c_smbus_write_byte_data(fd := fd, command := ALL_LED_ON_H, value := TO_USINT(SAR(IN := on, N := 8)));
-	i2c_smbus_write_byte_data(fd := fd, command := ALL_LED_OFF_L, value := TO_USINT(IAND(IN1 := off, IN2 := 16#FF)));
-	i2c_smbus_write_byte_data(fd := fd, command := ALL_LED_OFF_H, value := TO_USINT(SAR(IN := off, N := 8)));
+	i2c_smbus_write_byte_data(fd := fd, command := ALL_LED_ON_L, value := TO_USINT(IAND(IN1 := on_value, IN2 := 16#FF)));
+	i2c_smbus_write_byte_data(fd := fd, command := ALL_LED_ON_H, value := TO_USINT(SAR(IN := on_value, N := 8)));
+	i2c_smbus_write_byte_data(fd := fd, command := ALL_LED_OFF_L, value := TO_USINT(IAND(IN1 := off_value, IN2 := 16#FF)));
+	i2c_smbus_write_byte_data(fd := fd, command := ALL_LED_OFF_H, value := TO_USINT(SAR(IN := off_value, N := 8)));
 END_FUNCTION
 
 FUNCTION setPWM
 	VAR_INPUT
 		fd : DINT;
 		channel : USINT;
-		on : UINT;
-		off : UINT;
+		on_value : UINT;
+		off_value : UINT;
 	END_VAR
 	
 	VAR
@@ -91,8 +91,8 @@ FUNCTION setPWM
 		LED0_OFF_H : USINT := 16#09;
 	END_VAR
 
-	i2c_smbus_write_byte_data(fd := fd, command := LED0_ON_L + 4 * channel, value := TO_USINT(IAND(IN1 := on, IN2 := 16#FF)));
-	i2c_smbus_write_byte_data(fd := fd, command := LED0_ON_H + 4 * channel, value := TO_USINT(SAR(IN := on, N := 8)));
-	i2c_smbus_write_byte_data(fd := fd, command := LED0_OFF_L + 4 * channel, value := TO_USINT(IAND(IN1 := off, IN2 := 16#FF)));
-	i2c_smbus_write_byte_data(fd := fd, command := LED0_OFF_H + 4 * channel, value := TO_USINT(SAR(IN := off, N := 8)));
+	i2c_smbus_write_byte_data(fd := fd, command := LED0_ON_L + 4 * channel, value := TO_USINT(IAND(IN1 := on_value, IN2 := 16#FF)));
+	i2c_smbus_write_byte_data(fd := fd, command := LED0_ON_H + 4 * channel, value := TO_USINT(SAR(IN := on_value, N := 8)));
+	i2c_smbus_write_byte_data(fd := fd, command := LED0_OFF_L + 4 * channel, value := TO_USINT(IAND(IN1 := off_value, IN2 := 16#FF)));
+	i2c_smbus_write_byte_data(fd := fd, command := LED0_OFF_H + 4 * channel, value := TO_USINT(SAR(IN := off_value, N := 8)));
 END_FUNCTION

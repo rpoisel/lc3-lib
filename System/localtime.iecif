@@ -1,4 +1,5 @@
 {extern_c}
+{Supported_Platforms := Raspbian, LinuxX86, Econ100, MICA, phyboardRegor, phyboardWega, RevolutionPi, WBCortexA7}
 
 FUNCTION localtime
 	VAR_OUTPUT

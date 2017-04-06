@@ -1,4 +1,8 @@
 FUNCTION I2C_I2HAE_read
+   {
+    height := 120;
+    width := 150;
+  }
 	VAR_INPUT
 		fd : DINT := -1;
 		address : INT;

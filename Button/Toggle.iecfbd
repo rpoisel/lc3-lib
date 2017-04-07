@@ -1,0 +1,40 @@
+FUNCTION Toggle
+  VAR_INPUT
+    in : BOOL;
+    value : BOOL;
+  END_VAR
+  VAR_OUTPUT
+    out : BOOL;
+  END_VAR
+
+  (*
+
+    // Network 1:
+    NOT(IN := value, NOT => @C(7).NOT);
+    SEL(G := in, IN0 := value, IN1 := @C(7).NOT, SEL => out);
+
+  *)
+
+  @C(1) : @F(SEL), @R(530.0, 260.0, 120.0, 58.0), BOOL, @I(@N(G), @L(9.5)), @I(@N(IN0), @L(29.5)), @I(@N(IN1), @L(49.5)), @O(@N(SEL), @R(9.5));
+  @VF(2) : @E(in), @R(300.0, 260.0, 140.0, 19.0);
+  @VF(4) : @E(value), @R(300.0, 280.0, 140.0, 19.0);
+  @VF(5) : @E(out), @R(700.0, 260.0, 140.0, 19.0);
+  @C(7) : @F(NOT), @R(450.0, 300.0, 60.0, 18.5), BOOL, @I(@N(IN), @L(9.5)), @O(@N(NOT), @R(9.5));
+  @VF(10) : @E(value), @R(300.0, 300.0, 140.0, 19.0);
+
+  @G(3) :
+     @L(@VF(2).o, @C(1).G)
+    ;
+  @G(6) :
+     @L(@C(1).SEL, @VF(5).i)
+    ;
+  @G(8) :
+     @L(@C(7).NOT, @C(1).IN1)
+    ;
+  @G(9) :
+     @L(@VF(4).o, @C(1).IN0)
+    ;
+  @G(11) :
+     @L(@VF(10).o, @C(7).IN)
+    ;
+END_FUNCTION

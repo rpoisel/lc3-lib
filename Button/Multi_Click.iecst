@@ -1,0 +1,27 @@
+FUNCTION_BLOCK Multi_Click
+  {
+    height := 150;
+  }
+	VAR_INPUT
+		in : BOOL;
+		CV : INT;
+		period : TIME := T#500ms;
+	END_VAR
+	VAR_OUTPUT
+		out : BOOL;
+	END_VAR
+
+	VAR
+		counter : CTU;
+		counter_trigger : R_TRIG;
+		timer : TOF;
+		timer_trigger : F_TRIG;
+	END_VAR
+
+	timer(IN := in, PT := period);
+	timer_trigger(CLK := timer.Q);
+	counter_trigger(CLK := counter.Q);
+	out := counter_trigger.Q;
+	counter(CU := in, R := timer_trigger.Q OR counter_trigger.Q, PV := CV);
+    
+END_FUNCTION_BLOCK

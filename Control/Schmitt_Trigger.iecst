@@ -1,0 +1,21 @@
+FUNCTION_BLOCK Schmitt_Trigger
+  {
+    height := 160;
+    width := 120;
+  }
+	VAR_INPUT
+		in : DINT;
+		low : DINT;
+		high : DINT;
+	END_VAR
+	VAR_OUTPUT
+		out : BOOL;
+	END_VAR
+
+	VAR
+		flipflop : RS;
+	END_VAR
+
+	flipflop(S := in <= low, R1 := in >= high, Q1 => out);
+
+END_FUNCTION_BLOCK

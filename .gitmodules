@@ -1,0 +1,3 @@
+[submodule "Control/PID/PID-c"]
+	path = Control/PID/PID-c
+	url = https://github.com/rpoisel/PID.git

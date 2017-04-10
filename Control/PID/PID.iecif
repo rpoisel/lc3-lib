@@ -1,0 +1,18 @@
+{extern_c}
+
+FUNCTION_BLOCK PID
+	VAR_INPUT
+		input : REAL;
+		set : REAL;
+		kp : REAL;
+		ki : REAL;
+		kd : REAL;
+	END_VAR
+	VAR_OUTPUT
+		output : REAL;
+	END_VAR
+	VAR
+		internalData : ARRAY[0..255] OF BYTE;
+		initialized : BOOL;
+	END_VAR
+END_FUNCTION_BLOCK

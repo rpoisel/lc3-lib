@@ -1,27 +1,52 @@
 FUNCTION_BLOCK Multi_Click
   {
     height := 150;
+    width := 120;
   }
 	VAR_INPUT
 		in : BOOL;
-		CV : INT;
-		period : TIME := T#500ms;
+		period : TIME := T#300ms;
+	END_VAR
+	VAR_OUTPUT
+		out : BOOL;
+		cv : UINT;
+	END_VAR
+	VAR
+		trigger_in : R_TRIG;
+		timer : TOF;
+		trigger_timer : F_TRIG;
+		cv_reset : BOOL;
+	END_VAR
+
+	IF trigger_timer.Q THEN
+		cv := 0;
+	END_IF;
+
+	timer(IN := in, PT := period);
+
+	trigger_in(CLK := in);
+	IF trigger_in.Q THEN
+		cv := cv + 1;
+	END_IF;
+
+	trigger_timer(CLK := timer.Q, Q => out);
+END_FUNCTION_BLOCK
+
+FUNCTION_BLOCK Double_Click
+  {
+    height := 120;
+    width := 120;
+  }
+	VAR_INPUT
+		in : BOOL;
+		period : TIME := T#300ms;
 	END_VAR
 	VAR_OUTPUT
 		out : BOOL;
 	END_VAR
-
 	VAR
-		counter : CTU;
-		counter_trigger : R_TRIG;
-		timer : TOF;
-		timer_trigger : F_TRIG;
+		multi_click : Multi_Click;
 	END_VAR
-
-	timer(IN := in, PT := period);
-	timer_trigger(CLK := timer.Q);
-	counter_trigger(CLK := counter.Q);
-	out := counter_trigger.Q;
-	counter(CU := in, R := timer_trigger.Q OR counter_trigger.Q, PV := CV);
-    
+	multi_click(in := in, period := period);
+	out := multi_click.out AND multi_click.cv = 2;
 END_FUNCTION_BLOCK
